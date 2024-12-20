@@ -27,34 +27,34 @@ audio = I2S(0, # This must be either 0 or 1 for ESP32
 
 servo = PWM(Pin(36), freq=50)
 led = Pin(1, Pin.OUT)
-Switch1 = Pin(14, Pin.IN, Pin.PULL_DOWN)
+Switch1 = Pin(14, Pin.IN, Pin.PULL_DOWN) #defining all of the buttons for the code
 Switch2 = Pin(11, Pin.IN, Pin.PULL_DOWN)
 Switch3 = Pin(13, Pin.IN, Pin.PULL_DOWN)
 Switch4 = Pin(12, Pin.IN, Pin.PULL_DOWN)
-correct = [0, 1, 2, 3]
-user_input = []
+correct = [0, 1, 2, 3] #correct sequence that the user must enter
+user_input = [] #list that will correspond to the users inputs
 
 while True:
-    if Switch1.value() == 1 and len(user_input)<4:
+    if Switch1.value() == 1 and len(user_input)<4: #if the first switch is pressed and the set of numbers is less than 4, add 0 to the list
         user_input.append(0)
         sleep(0.5)
         print (user_input)
-    elif Switch2.value() == 1 and len(user_input)<4:
+    elif Switch2.value() == 1 and len(user_input)<4: #if the second switch is pressed and the set of numbers is less than 4, add 1 to the list
         user_input.append(1)
         sleep(0.5)
         print (user_input)
-    elif Switch3.value() == 1 and len(user_input)<4:
+    elif Switch3.value() == 1 and len(user_input)<4: #if the third switch is pressed and the set of numbers is less than 4, add 2 to the list
         user_input.append(2)
         sleep(0.5)
         print (user_input)
-    elif Switch4.value() == 1 and len(user_input)<4:
+    elif Switch4.value() == 1 and len(user_input)<4: #if the fourth switch is pressed and the set of numbers is less than 4, add 3 to the list
         user_input.append(3)
         sleep(0.5)
         print (user_input)
         
-    if len(user_input) >= len(correct) and user_input != correct:
+    if len(user_input) >= len(correct) and user_input != correct: # if the set of numbers the users inputs is greater than or equal to four, the number of items in the correct list, and the lists do not match, reset the list. 
         user_input=[]
-        audio = I2S(0, # This must be either 0 or 1 for ESP32
+        audio = I2S(0, # This must be either 0 or 1 for ESP32 #it will also play an audio file to say that your code was wrong
             sck=sck_pin, ws=ws_pin, sd=sd_pin,
             mode=I2S.TX,
             bits=16,
@@ -83,7 +83,7 @@ while True:
 
         audio.deinit()
         
-    if user_input == correct:
+    if user_input == correct: #if the code entered is correct, unlock the water bottle with the motor and play the sound to say it is correct
         servo.duty(50)
         audio = I2S(0, # This must be either 0 or 1 for ESP32
             sck=sck_pin, ws=ws_pin, sd=sd_pin,
@@ -144,7 +144,7 @@ while True:
         
         
     
-        user_input = []
+        user_input = [] #once the sound file is played reset the code and relock the bottle
         servo.duty(80)
         audio.deinit()
         print("done")
