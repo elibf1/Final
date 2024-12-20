@@ -1,4 +1,5 @@
-# Control the position of a servo using PWM
+# TEST CODE FOR MOTOR WITH BUTTON
+#Control the position of a servo using PWM
 from machine import Pin, PWM
 from time import sleep
 servo = PWM(Pin(11), freq=50)
