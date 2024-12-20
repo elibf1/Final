@@ -23,60 +23,134 @@ audio = I2S(0, # This must be either 0 or 1 for ESP32
             format=I2S.MONO,
             rate= 88200, # This must match the sample rate of your file!
             ibuf=10000)
-WAVFILE = "ding.wav"
-BUFFER_SIZE = 100000
 
-wav = open(WAVFILE, "rb") # Open the file to read its bytes
-pos = wav.seek(44) # Skip over the WAV header information and get to the data
-
-buf = bytearray(BUFFER_SIZE)
-wav_samples_mv = memoryview(buf)
 
 servo = PWM(Pin(36), freq=50)
 led = Pin(1, Pin.OUT)
-Switch1 = Pin(21, Pin.IN, Pin.PULL_DOWN)
-Switch2 = Pin(15, Pin.IN, Pin.PULL_DOWN)
-Switch3 = Pin(37, Pin.IN, Pin.PULL_DOWN)
-Switch4 = Pin(38, Pin.IN, Pin.PULL_DOWN)
+Switch1 = Pin(14, Pin.IN, Pin.PULL_DOWN)
+Switch2 = Pin(11, Pin.IN, Pin.PULL_DOWN)
+Switch3 = Pin(13, Pin.IN, Pin.PULL_DOWN)
+Switch4 = Pin(12, Pin.IN, Pin.PULL_DOWN)
 correct = [0, 1, 2, 3]
 user_input = []
 
 while True:
-    
-    
     if Switch1.value() == 1 and len(user_input)<4:
         user_input.append(0)
         sleep(0.5)
         print (user_input)
-    if Switch2.value() == 1 and len(user_input)<4:
+    elif Switch2.value() == 1 and len(user_input)<4:
         user_input.append(1)
         sleep(0.5)
         print (user_input)
-    if Switch3.value() == 1 and len(user_input)<4:
+    elif Switch3.value() == 1 and len(user_input)<4:
         user_input.append(2)
         sleep(0.5)
         print (user_input)
-    if Switch4.value() == 1 and len(user_input)<4:
+    elif Switch4.value() == 1 and len(user_input)<4:
         user_input.append(3)
         sleep(0.5)
         print (user_input)
+        
+    if len(user_input) >= len(correct) and user_input != correct:
+        user_input=[]
+        audio = I2S(0, # This must be either 0 or 1 for ESP32
+            sck=sck_pin, ws=ws_pin, sd=sd_pin,
+            mode=I2S.TX,
+            bits=16,
+            format=I2S.MONO,
+            rate= 88200, # This must match the sample rate of your file!
+            ibuf=10000)
+        
+        WAVeFILE = "Errorsound.wav"
+        BUFFER_SIZE = 10000
+        wav = open(WAVeFILE, "rb")
+        pos = wav.seek(44) 
+        buf = bytearray(BUFFER_SIZE)
+        wav_samples_mv = memoryview(buf)
+
+
+        try:
+            while True:
+                bytes_read = wav.readinto(wav_samples_mv)
+                if bytes_read == 0:
+                   break 
+                else:
+                    num_written = audio.write(wav_samples_mv[:bytes_read])
+
+        except (KeyboardInterrupt) as e:
+            pass
+
+        audio.deinit()
+        
     if user_input == correct:
         servo.duty(50)
-        sleep(5)
+        audio = I2S(0, # This must be either 0 or 1 for ESP32
+            sck=sck_pin, ws=ws_pin, sd=sd_pin,
+            mode=I2S.TX,
+            bits=16,
+            format=I2S.MONO,
+            rate= 88200, # This must match the sample rate of your file!
+            ibuf=10000)
+        
+        WAVcFILE = "Correctsound.wav"
+        BUFFER_SIZE = 10000
+        wav = open(WAVcFILE, "rb")
+        pos = wav.seek(44) 
+        buf = bytearray(BUFFER_SIZE)
+        wav_samples_mv = memoryview(buf)
+
+
+        try:
+            while True:
+                bytes_read = wav.readinto(wav_samples_mv)
+                if bytes_read == 0:
+                   break 
+                else:
+                    num_written = audio.write(wav_samples_mv[:bytes_read])
+
+        except (KeyboardInterrupt) as e:
+            pass
+
+        audio.deinit()
+        audio = I2S(0, # This must be either 0 or 1 for ESP32
+            sck=sck_pin, ws=ws_pin, sd=sd_pin,
+            mode=I2S.TX,
+            bits=16,
+            format=I2S.MONO,
+            rate= 88200, # This must match the sample rate of your file!
+            ibuf=10000)
+        
+        WAVdFILE = "drink.wav"
+        BUFFER_SIZE = 10000
+        wav = open(WAVdFILE, "rb")
+        pos = wav.seek(44) 
+        buf = bytearray(BUFFER_SIZE)
+        wav_samples_mv = memoryview(buf)
+
+
+        try:
+            while True:
+                bytes_read = wav.readinto(wav_samples_mv)
+                if bytes_read == 0:
+                   break 
+                else:
+                    num_written = audio.write(wav_samples_mv[:bytes_read])
+
+        except (KeyboardInterrupt) as e:
+            pass
+
+        audio.deinit()
+        
+        
     
         user_input = []
-        led.off()
         servo.duty(80)
         audio.deinit()
         print("done")
-        wav = open(WAVFILE, "rb")
-        pos = wav.seek(44)
-    if len(user_input) >= 4 and user_input != correct:
-        user_input = []
-        print (user_input)
         
     else:
-        led.off()
         servo.duty(80)
     
     
+
